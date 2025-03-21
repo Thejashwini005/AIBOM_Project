@@ -1,103 +1,58 @@
-# AIBOM_Project
-An automated framework to generate AI Bill Of Materials(AIBOM)
+**Status:** Archive (code is provided as-is, no updates expected)
 
-AIBOM Generation Tool
-Overview
+# gpt-2
 
-The AIBOM (AI Bill of Materials) Generation Tool automates the process of generating:
+Code and models from the paper ["Language Models are Unsupervised Multitask Learners"](https://d4mucfpksywv.cloudfront.net/better-language-models/language-models.pdf).
 
-AIBOM (AI Bill of Materials)
+You can read about GPT-2 and its staged release in our [original blog post](https://openai.com/research/better-language-models/), [6 month follow-up post](https://openai.com/blog/gpt-2-6-month-follow-up/), and [final post](https://www.openai.com/blog/gpt-2-1-5b-release/).
 
-SBOM (Software Bill of Materials)
+We have also [released a dataset](https://github.com/openai/gpt-2-output-dataset) for researchers to study their behaviors.
 
-Vulnerability Report
+<sup>*</sup> *Note that our original parameter counts were wrong due to an error (in our previous blog posts and paper).  Thus you may have seen small referred to as 117M and medium referred to as 345M.*
 
+## Usage
 
-This tool is designed to work with various AI models by allowing users to provide their own model directory. The script ensures flexibility by keeping model dependencies separate from the tool itself.
+This repository is meant to be a starting point for researchers and engineers to experiment with GPT-2.
 
+For basic information, see our [model card](./model_card.md).
 
----
+### Some caveats
 
-Installation
+- GPT-2 models' robustness and worst case behaviors are not well-understood.  As with any machine-learned model, carefully evaluate GPT-2 for your use case, especially if used without fine-tuning or in safety-critical applications where reliability is important.
+- The dataset our GPT-2 models were trained on contains many texts with [biases](https://twitter.com/TomerUllman/status/1101485289720242177) and factual inaccuracies, and thus GPT-2 models are likely to be biased and inaccurate as well.
+- To avoid having samples mistaken as human-written, we recommend clearly labeling samples as synthetic before wide dissemination.  Our models are often incoherent or inaccurate in subtle ways, which takes more than a quick read for a human to notice.
 
-1. Install General Dependencies
+### Work with us
 
-The script requires some basic dependencies. Install them using:
+Please [let us know](mailto:languagequestions@openai.com) if you’re doing interesting research with or working on applications of GPT-2!  We’re especially interested in hearing from and potentially working with those who are studying
+- Potential malicious use cases and defenses against them (e.g. the detectability of synthetic text)
+- The extent of problematic content (e.g. bias) being baked into the models and effective mitigations
 
-pip install numpy pandas json5
+## Development
 
-2. Install Model-Specific Dependencies
+See [DEVELOPERS.md](./DEVELOPERS.md)
 
-Since different AI models have different requirements, users must install dependencies based on their chosen model:
+## Contributors
 
-For PyTorch-based models (e.g., GPT-2, BERT, LLaMA):
+See [CONTRIBUTORS.md](./CONTRIBUTORS.md)
 
-pip install torch transformers
+## Citation
 
-For TensorFlow-based models:
+Please use the following bibtex entry:
+```
+@article{radford2019language,
+  title={Language Models are Unsupervised Multitask Learners},
+  author={Radford, Alec and Wu, Jeff and Child, Rewon and Luan, David and Amodei, Dario and Sutskever, Ilya},
+  year={2019}
+}
+```
 
-pip install tensorflow
+## Future work
 
-For other models:
-Refer to the official documentation and install the required libraries.
+We may release code for evaluating the models on various benchmarks.
 
+We are still considering release of the larger models.
 
+## License
 
----
-
-Usage
-
-Command to Run the Script
-
-Execute the script by providing the model directory path:
-
-python generate_aibom.py --model-path /path/to/your/model
-
-Example
-
-If the AI model is stored in /home/user/models/gpt-2, use:
-
-python generate_aibom.py --model-path /home/user/models/gpt-2
-
-
----
-
-Output
-
-After successful execution, the script will generate three JSON reports inside a reports/ directory:
-
-Handling Vulnerabilities
-
-If the vulnerability_report.json contains vulnerabilities, a warning message will be displayed:
-
-⚠️ Warning: Model not ready for production! ⚠️
-
-
----
-
-Directory Structure
-
-After running the script, the expected directory structure is:
-
-/path/to/your/model/
-│── reports/
-│ ├── aibom.json
-│ ├── sbom.json
-│ ├── vulnerability_report.json
-│── other_model_files/
-
-
----
-
-License
-
-This project is open-source. Feel free to use and contribute!
-
-
----
-
-Notes:
-
-This script does not include model-specific dependencies; users must install them separately.
-
-Ensure that the provided model directory contains valid model files before running the script.
+[Modified MIT](./LICENSE)
