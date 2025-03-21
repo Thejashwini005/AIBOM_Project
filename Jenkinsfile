@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        GIT_CREDENTIALS_ID = 'github-private-repo'
+        GIT_CREDENTIALS_ID = '569a0561-8985-4a3c-8bd9-ea17b65d2e89'
         REPO_URL = 'https://github.com/Thejashwini005/AIBOM_Project.git'
-        MODEL_DIR = '/home/jenkins/models'  // Change this path if needed
+        MODEL_DIR = '${env.WORKPLACE}/models'  // Change this path if needed
     }
 
     stages {
