@@ -6,6 +6,17 @@ import hashlib
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--model-path", required=True, help="Path to the model directory")
+args = parser.parse_args()
+if not args.model_path:
+    print("❌ Error: LOCAL_PATH is not set. Please provide it in the pipeline.")
+    exit(1)
+model_path = args.model_path
+print(f"✅ Using model path: {model_path}")
+
+
 # Get local_path from environment variables (pipeline parameters)
 local_path = os.getenv("LOCAL_PATH")
 
