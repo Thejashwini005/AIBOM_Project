@@ -6,6 +6,7 @@ pipeline {
         MODEL_DIR = 'F:/HPE_Project/Model'
         SCRIPT_REPO = 'https://github.com/Thejashwini005/AIBOM_Project.git'
         REPORT_DIR = "${MODEL_DIR}/reports"
+        TOOLS_DIR = "${MODEL_DIR}/tools"
     }
 
     parameters {
@@ -40,6 +41,41 @@ pipeline {
                     sh "cp ${MODEL_DIR}/script/generate_aibom.py ${MODEL_DIR}/"
                     echo "✅ Deploy stage completed."
                 }
+            }
+        }
+
+        stage('Setup Environment') {
+            steps {
+                sh 'mkdir -p $TOOLS_DIR'
+            }
+        }
+        stage('Install Syft') {
+            steps {
+                sh '''
+                    echo "Installing Syft..."
+                    curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b $TOOLS_DIR
+                    echo "Syft installed successfully!"
+                    syft --version
+                '''
+            }
+        }
+        stage('Install Trivy') {
+            steps {
+                sh '''
+                    echo "Installing Trivy..."
+                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $TOOLS_DIR
+                    echo "Trivy installed successfully!"
+                    trivy --version
+                '''
+            }
+        }
+        stage('Verify Installation') {
+            steps {
+                sh '''
+                    echo "Checking Syft and Trivy..."
+                    which syft || echo "Syft not found!"
+                    which trivy || echo "Trivy not found!"
+                '''
             }
         }
 
