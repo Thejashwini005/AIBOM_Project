@@ -23,7 +23,7 @@ pipeline {
                         sh "git clone ${params.MODEL_GIT_URL} ${MODEL_DIR}"
                     } else if (params.MODEL_LOCAL_PATH) {
                         echo "📂 Copying model from local path: ${params.MODEL_LOCAL_PATH}"
-                        sh "cp -r ${params.MODEL_LOCAL_PATH} ${MODEL_DIR}"
+                        sh "cp -r \"${params.MODEL_LOCAL_PATH}\" \"${MODEL_DIR}\""
                     } else {
                         error "❌ No model source provided!"
                     }
