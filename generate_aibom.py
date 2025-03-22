@@ -24,15 +24,15 @@ if not local_path:
     print("❌ Error: LOCAL_PATH is not set. Please provide it in the pipeline.")
     exit(1)
 
-def install_syft():  
-    """Installs Syft if not already installed."""  
-    try:  
-        subprocess.run(["syft", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  
-        print("✅ Syft is already installed.")  
-    except subprocess.CalledProcessError:  
-        print("⚙️ Installing Syft...")  
-        subprocess.run(["curl", "-sSfL", "https://raw.githubusercontent.com/anchore/syft/main/install.sh", "|", "sh", "-s", "--", "-b", "/usr/local/bin"], check=True)  
-        print("✅ Syft installed successfully!")  
+# def install_syft():  
+  #  """Installs Syft if not already installed."""  
+   # try:  
+       # subprocess.run(["syft", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  
+       # print("✅ Syft is already installed.")  
+    # except subprocess.CalledProcessError:  
+       # print("⚙️ Installing Syft...")  
+       # subprocess.run(["curl", "-sSfL", "https://raw.githubusercontent.com/anchore/syft/main/install.sh", "|", "sh", "-s", "--", "-b", "/usr/local/bin"], check=True)  
+       # print("✅ Syft installed successfully!")  
 
 def calculate_file_hash(file_path):  
     if not os.path.exists(file_path):  
@@ -83,17 +83,17 @@ def generate_aibom(input_folder, reports_folder):
     print(f"✅ AIBOM saved to {aibom_file}")  
     return aibom_file  
 
-def generate_sbom(input_folder, reports_folder):  
-    """Generate SBOM using Syft and save it inside the reports folder."""  
-    sbom_file = os.path.join(reports_folder, "sbom.json")  
+#def generate_sbom(input_folder, reports_folder):  
+    #"""Generate SBOM using Syft and save it inside the reports folder."""  
+    # sbom_file = os.path.join(reports_folder, "sbom.json")  
 
-    try:  
-        subprocess.run(["syft", f"dir:{input_folder}", "-o", "json", "-q"], check=True, stdout=open(sbom_file, "w"))  
-        print(f"✅ SBOM saved to {sbom_file}")  
-        return sbom_file  
-    except subprocess.CalledProcessError as e:  
-        print(f"❌ Error generating SBOM: {e}")  
-        return None  
+    # try:  
+       # subprocess.run(["syft", f"dir:{input_folder}", "-o", "json", "-q"], check=True, stdout=open(sbom_file, "w"))  
+       # print(f"✅ SBOM saved to {sbom_file}")  
+       # return sbom_file  
+   # except subprocess.CalledProcessError as e:  
+       # print(f"❌ Error generating SBOM: {e}")  
+       # return None  
 
 def generate_vulnerability_report(input_folder, reports_folder):  
     """Generate a vulnerability scan report using Trivy and save it inside the reports folder."""  
@@ -125,13 +125,13 @@ def main():
     os.makedirs(reports_folder, exist_ok=True)  
 
     # Install Syft before generating SBOM  
-    install_syft()  
+    # install_syft()  
 
     # Generate AIBOM  
     generate_aibom(local_path, reports_folder)  
 
     # Generate SBOM  
-    generate_sbom(local_path, reports_folder)  
+   # generate_sbom(local_path, reports_folder)  
 
     # Generate Vulnerability Report  
     generate_vulnerability_report(local_path, reports_folder)  
