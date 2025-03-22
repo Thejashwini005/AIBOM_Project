@@ -10,7 +10,7 @@ pipeline {
 
     parameters {
         string(name: 'MODEL_GIT_URL', defaultValue: '', description: 'Enter GitHub repo URL for the model (leave empty if using local path)')
-        string(name: 'F:\HPE Project\gpt-2\gpt-2', defaultValue: '', description: 'Enter local model path (leave empty if using GitHub)')
+        string(name: 'MODEL_LOCAL_PATH', defaultValue: '', description: 'Enter local model path (leave empty if using GitHub)')
     }
 
     stages {
