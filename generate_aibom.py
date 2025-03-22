@@ -3,6 +3,8 @@ import os
 import importlib.metadata  
 import subprocess  
 import hashlib  
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Get local_path from environment variables (pipeline parameters)
 local_path = os.getenv("LOCAL_PATH")
