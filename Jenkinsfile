@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     echo "🛠️ Running AIBOM script..."
-                    sh "python3 ${MODEL_DIR}/generate_aibom.py --model-path ${MODEL_DIR}"
+                    sh "python ${MODEL_DIR}/generate_aibom.py --model-path ${MODEL_DIR}"
                     
                     // Ensure report directory exists
                     sh "mkdir -p ${REPORT_DIR}"
