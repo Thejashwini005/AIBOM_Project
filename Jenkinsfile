@@ -2,69 +2,89 @@ pipeline {
     agent any
 
     environment {
-        GIT_CREDENTIALS_ID = '569a0561-8985-4a3c-8bd9-ea17b65d2e89'
-        REPO_URL = 'https://github.com/Thejashwini005/AIBOM_Project.git'
-        MODEL_DIR = '${env.WORKPLACE}/models'  // Change this path if needed
+        GIT_CREDENTIALS_ID = 'gihub-credentials'
+        MODEL_DIR = 'F:\HPE Project\Model'
+        SCRIPT_REPO = 'https://github.com/Thejashwini005/AIBOM_Project.git'
+        REPORT_DIR = "${MODEL_DIR}/reports"
+    }
+
+    parameters {
+        string(name: 'MODEL_GIT_URL', defaultValue: '', description: 'Enter GitHub repo URL for the model (leave empty if using local path)')
+        string(name: 'MODEL_LOCAL_PATH', defaultValue: '', description: 'Enter local model path (leave empty if using GitHub)')
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Build') {
             steps {
                 script {
                     sh "rm -rf ${MODEL_DIR}"
-                    sh "git clone --depth=1 ${REPO_URL} ${MODEL_DIR}"
-                    echo "✅ Repository cloned successfully."
-                }
-            }
-        }
-
-        stage('Validate Required Files') {
-            steps {
-                script {
-                    def datasetExists = fileExists("${MODEL_DIR}/dataset.json")
-                    def modelInfoExists = fileExists("${MODEL_DIR}/modelinfo.json")
-
-                    if (!datasetExists || !modelInfoExists) {
-                        error "❌ Required files missing. Stopping pipeline."
+                    if (params.MODEL_GIT_URL) {
+                        echo "📥 Cloning model from GitHub: ${params.MODEL_GIT_URL}"
+                        sh "git clone ${params.MODEL_GIT_URL} ${MODEL_DIR}"
+                    } else if (params.MODEL_LOCAL_PATH) {
+                        echo "📂 Copying model from local path: ${params.MODEL_LOCAL_PATH}"
+                        sh "cp -r ${params.MODEL_LOCAL_PATH} ${MODEL_DIR}"
+                    } else {
+                        error "❌ No model source provided!"
                     }
-                    echo "✅ Model files found."
+                    echo "✅ Build stage completed."
                 }
             }
         }
 
-        stage('Run AIBOM Script') {
+        stage('Deploy') {
             steps {
                 script {
+                    echo "📥 Fetching AIBOM script..."
+                    sh "git clone ${SCRIPT_REPO} ${MODEL_DIR}/script"
+                    sh "cp ${MODEL_DIR}/script/generate_aibom.py ${MODEL_DIR}/"
+                    echo "✅ Deploy stage completed."
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo "🛠️ Running AIBOM script..."
                     sh "python3 ${MODEL_DIR}/generate_aibom.py --model-path ${MODEL_DIR}"
-                    echo "✅ AIBOM script executed."
+                    
+                    // Ensure report directory exists
+                    sh "mkdir -p ${REPORT_DIR}"
+                    
+                    echo "✅ Test stage completed."
                 }
             }
         }
 
-        stage('Check Reports') {
+        stage('Promote') {
             steps {
                 script {
-                    def aibomExists = fileExists("${MODEL_DIR}/reports/aibom.json")
-                    def sbomExists = fileExists("${MODEL_DIR}/reports/sbom.json")
-                    def vulnExists = fileExists("${MODEL_DIR}/reports/vulnerability_report.json")
+                    def aibomExists = fileExists("${REPORT_DIR}/aibom.json")
+                    def sbomExists = fileExists("${REPORT_DIR}/sbom.json")
+                    def vulnExists = fileExists("${REPORT_DIR}/vulnerability_report.json")
 
                     if (!aibomExists || !sbomExists || !vulnExists) {
-                        error "❌ Required reports missing!"
+                        error "❌ Reports missing! Cannot proceed."
                     }
-                    echo "✅ Reports generated successfully."
+                    
+                    def vulnReport = readFile("${REPORT_DIR}/vulnerability_report.json")
+                    if (vulnReport.contains("high") || vulnReport.contains("critical")) {
+                        echo "⚠️ WARNING: Model has vulnerabilities! Not ready for production."
+                    } else {
+                        echo "✅ Model passes security checks."
+                    }
+                    echo "✅ Promote stage completed."
                 }
             }
         }
 
-        stage('Check Vulnerabilities') {
+        stage('Release') {
             steps {
                 script {
-                    def vulnReport = readFile("${MODEL_DIR}/reports/vulnerability_report.json")
-                    if (vulnReport.contains("high") || vulnReport.contains("critical")) {
-                        echo "⚠️ WARNING: Model not ready for production! ⚠️"
-                    } else {
-                        echo "✅ No critical vulnerabilities found."
-                    }
+                    echo "📢 CI/CD Pipeline completed successfully!"
+                    echo "Generated Reports:"
+                    sh "ls -lh ${REPORT_DIR}"
                 }
             }
         }
@@ -75,7 +95,7 @@ pipeline {
             echo "❌ Pipeline failed. Check logs for details."
         }
         success {
-            echo "✅ Pipeline completed successfully."
+            echo "✅ Pipeline executed successfully."
         }
     }
 }
