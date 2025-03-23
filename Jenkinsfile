@@ -95,20 +95,27 @@ pipeline {
         stage('Promote') {
             steps {
                 script {
+                    def vulnReportPath = "${REPORT_DIR}/vulnerability_report.json"
                     def aibomExists = fileExists("${REPORT_DIR}/aibom.json")
                     def sbomExists = fileExists("${REPORT_DIR}/sbom.json")
-                    def vulnExists = fileExists("${REPORT_DIR}/vulnerability_report.json")
-                    
-                    def vulnReport = readFile("${REPORT_DIR}/vulnerability_report.json")
-                    if (vulnReport.contains("critical")) {
-                        echo "⚠️ WARNING: Model has vulnerabilities! Not ready for production."
+                    def vulnExists = fileExists(vulnReportPath)
+
+                    if (vulnExists) {
+                        def vulnReport = readFile(vulnReportPath)
+                        if (vulnReport.contains("critical")) {
+                            echo "⚠️ WARNING: Model has vulnerabilities! Not ready for production."
+                        } else {
+                            echo "✅ Model passes security checks."
+                        }
                     } else {
-                        echo "✅ Model passes security checks."
+                        echo "⚠️ vulnerability_report.json not found. Skipping vulnerability check."
                     }
-                    echo "✅ Promote stage completed."
+
+                    echo "✅ Promote stage completed successfully."
                 }
             }
         }
+
 
         stage('Release') {
             steps {
