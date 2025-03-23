@@ -95,7 +95,7 @@ pipeline {
         stage('Promote') {
             steps {
                 script {
-                    def vulnReportPath = "${REPORT_DIR}/vulnerability_report.json"
+                    def vulnReportPath = "${REPORT_DIR}/vulnerability.json"
                     def aibomExists = fileExists("${REPORT_DIR}/aibom.json")
                     def sbomExists = fileExists("${REPORT_DIR}/sbom.json")
                     def vulnExists = fileExists(vulnReportPath)
@@ -108,7 +108,7 @@ pipeline {
                             echo "✅ Model passes security checks."
                         }
                     } else {
-                        echo "⚠️ vulnerability_report.json not found. Skipping vulnerability check."
+                        echo "⚠️ vulnerability.json not found. Skipping vulnerability check."
                     }
 
                     echo "✅ Promote stage completed successfully."
