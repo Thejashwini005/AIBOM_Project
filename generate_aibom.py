@@ -18,7 +18,7 @@ print(f"✅ Using model path: {model_path}")
 
 
 # Get local_path from environment variables (pipeline parameters)
-local_path = os.getenv("MODEL_LOCAL_PATH")
+local_path = os.getenv("MODEL_DIR")
 
 if not local_path:
     print("❌ Error: LOCAL_PATH is not set. Please provide it in the pipeline.")
