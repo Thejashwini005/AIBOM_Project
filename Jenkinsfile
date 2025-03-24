@@ -102,7 +102,7 @@ pipeline {
 
                     if (vulnExists) {
                         def vulnReport = readFile(vulnReportPath)
-                        if (vulnReport.contains("critical")) {
+                        if (vulnReport.contains("high") || vulnReport.contains("critical")) {
                             echo "⚠️ WARNING: Model has vulnerabilities! Not ready for production."
                         } else {
                             echo "✅ Model passes security checks."
