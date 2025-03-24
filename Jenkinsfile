@@ -43,44 +43,31 @@ pipeline {
                 }
             }
         }
-
-        stage('Setup Environment') {
-            steps {
-                sh 'mkdir -p $TOOLS_DIR'
-            }
-        }
-        stage('Install Syft') {
-            steps {
-                sh '''
-                    echo "Installing Syft..."
-                    curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b $TOOLS_DIR
-                    echo "Syft installed successfully!"
-                    syft --version
-                '''
-            }
-        }
-        stage('Install Trivy') {
-            steps {
-                sh '''
-                    echo "Installing Trivy..."
-                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $TOOLS_DIR
-                    echo "Trivy installed successfully!"
-                '''
-            }
-        }
-        stage('Verify Installation') {
-            steps {
-                sh '''
-                    echo "Checking Syft and Trivy..."
-                    which syft || echo "Syft not found!"
-                    which trivy || echo "Trivy not found!"
-                '''
-            }
-        }
-
+        
         stage('Test') {
             steps {
                 script {
+                    sh 'mkdir -p $TOOLS_DIR'
+
+                    sh '''
+                        echo "Installing Syft..."
+                        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b $TOOLS_DIR
+                        echo "Syft installed successfully!"
+                        syft --version
+                    '''
+
+                    sh '''
+                        echo "Installing Trivy..."
+                        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $TOOLS_DIR
+                        echo "Trivy installed successfully!"
+                    '''
+
+                    sh '''
+                        echo "Checking Syft and Trivy..."
+                        which syft || echo "Syft not found!"
+                        which trivy || echo "Trivy not found!"
+                    '''
+                    
                     echo "🛠️ Running AIBOM script..."
                     sh "python ${MODEL_DIR}/generate_aibom.py --model-path ${MODEL_DIR}"
                     
@@ -112,14 +99,7 @@ pipeline {
                     }
 
                     echo "✅ Promote stage completed successfully."
-                }
-            }
-        }
 
-
-        stage('Release') {
-            steps {
-                script {
                     echo "📢 CI/CD Pipeline completed successfully!"
                     echo "Generated Reports:"
                     sh "ls -lh ${REPORT_DIR}"
