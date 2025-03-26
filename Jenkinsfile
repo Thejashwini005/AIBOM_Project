@@ -29,6 +29,12 @@ pipeline {
                         error "❌ No model source provided!"
                     }
 
+                    def datasetExists = fileExists("${MODEL_DIR}/dataset.json")
+                    def model_infoExists = fileExists("${MODEL_DIR}/model_info.json")
+                    if(!datasetExists || !model_infoExists){
+                        echo "Pipeline failed"
+                    }
+
                     echo "✅ Build stage completed."
                 }
             }
