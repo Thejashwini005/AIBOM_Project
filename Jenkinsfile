@@ -30,7 +30,7 @@ pipeline {
                     }
 
                     def files = ['dataset.json', 'model_info.json']
-                    def missingFiles = files.findAll { !fileExists("MODEL_DIR/${it}") }
+                    def missingFiles = files.findAll { !fileExists("MODEL_LOCAL_PATH/${it}") }
 
                     if (!missingFiles.isEmpty()) {
                         error "Missing files: ${missingFiles.join(', ')}. Build failed!"
