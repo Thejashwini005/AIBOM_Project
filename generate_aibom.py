@@ -112,7 +112,7 @@ def generate_vulnerability_report(input_folder, reports_folder):
         return None
 
     try:
-        result = subprocess.run(["trivy", "sbom", sbom_path, "-f", "json", "-o", sbom_vulnereability_file],check=True,capture_output=True,text=True)
+        subprocess.run(["trivy", "fs", sbom_path, "--format", "cyclonedx", "--output", sbom_vulnereability_file],check=True,capture_output=True,text=True)
         print(f"✅ SBOM vulnerability report saved to {sbom_vulnereability_file}")
     except subprocess.CalledProcessError as e:
         print("❌ Trivy SBOM failed:")
