@@ -187,5 +187,7 @@ def main():
     file2 = os.path.join(reports_folder, "sbom_vulnereability.json")
     output = os.path.join(reports_folder,"combined_vulnerabilities.json")
 
+    compare_and_combine(file1, file2, output)
+
 if __name__ == "__main__":  
     main()
