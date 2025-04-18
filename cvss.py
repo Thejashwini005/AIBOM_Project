@@ -14,14 +14,21 @@ st.title("🛡️ CVSS & CWE Risk Prioritization Dashboard")
 uploaded_file = st.file_uploader("Upload vulnerability.json", type=["json"])
 
 if uploaded_file is not None:
-    # Load and parse JSON data
     data = json.load(uploaded_file)
-
-    # 🩵 Fix: Convert dict-of-dicts to list of dict
 
     if not data:
         st.warning("Uploaded file is empty.")
     else:
+        # Convert and clean
+        if isinstance(data, dict):
+            data = [v for v in data.values() if isinstance(v, dict) and 'cvss_score' in v and 'severity' in v]
+
+        try:
+            df = pd.DataFrame(data)
+        except Exception as e:
+            st.error(f"Failed to convert to DataFrame: {e}")
+            st.stop()
+
         # Convert to DataFrame
         if isinstance(data, dict):
             data = list(data.values())
