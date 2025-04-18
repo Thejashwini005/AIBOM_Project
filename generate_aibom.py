@@ -88,7 +88,7 @@ def generate_sbom(input_folder, reports_folder):
     sbom_file = os.path.join(reports_folder, "sbom.json")  
 
     try:  
-        subprocess.run(["syft", f"dir:{input_folder}", "-o", "json", "-q"], check=True, stdout=open(sbom_file, "w"))  
+        subprocess.run(["syft", f"dir:{input_folder}","-o","spdx-json","-q"], check=True, stdout=open(sbom_file, "w"))  
         print(f"✅ SBOM saved to {sbom_file}")  
         return sbom_file  
     except subprocess.CalledProcessError as e:  
@@ -102,15 +102,14 @@ def generate_vulnerability_report(input_folder, reports_folder):
     sbom_vulnereability_file = os.path.join(reports_folder, "sbom_vulnereability.json")
 
     cmd = ['trivy', 'sbom', '--format', 'json', 'sbom_path']
-
     try:  
         subprocess.run(["trivy", "fs", input_folder, "--include-dev-deps", "-f", "json", "-o", vulnerability_file], check=True)  
         print(f"✅ Vulnerability report saved to {vulnerability_file}")  
-         
+        
     except subprocess.CalledProcessError as e:  
         print(f"❌ Error generating vulnerability report: {e}")  
-        return None
-
+        return None  
+        
     try:
         result = subprocess.run(["trivy", "sbom", sbom_path, "-f", "json", "-o", sbom_vulnereability_file],check=True,capture_output=True,text=True)
         print(f"✅ SBOM vulnerability report saved to {sbom_vulnereability_file}")
@@ -153,6 +152,7 @@ def compare_and_combine(file1, file2, output_file):
         with open(output_file, "w") as f:
             json.dump(combined, f, indent=2)
         print(f"✅ Combined vulnerabilities saved to: {output_file}")
+
 
 def main():  
     """  
