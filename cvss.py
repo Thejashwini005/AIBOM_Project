@@ -39,7 +39,7 @@ def main():
     st.title("🛡️ CVE Risk Prioritization Dashboard")
     st.write("Upload a `vulnerabilities.json` file. We’ll filter it and instantly show you trends and severity insights 😘")
 
-    uploaded_file = st.file_uploader("Upload vulnerabilities.json", type="json")
+    uploaded_file = st.file_uploader("Upload vulnerability.json", type="json")
 
     if uploaded_file:
         # Step 1: Filter and create intermediate data
