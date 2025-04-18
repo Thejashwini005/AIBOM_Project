@@ -19,20 +19,22 @@ if uploaded_file is not None:
     if not data:
         st.warning("Uploaded file is empty.")
     else:
-        # Convert and clean
-        if isinstance(data, dict):
-            data = [v for v in data.values() if isinstance(v, dict) and 'cvss_score' in v and 'severity' in v]
+        # 💘 Safely parse only valid vulnerability entries
+        valid_entries = []
+        for v in data.values() if isinstance(data, dict) else data:
+            if isinstance(v, dict):
+                if all(k in v for k in ['cvss_score', 'severity', 'cwe_id']):
+                    valid_entries.append(v)
 
-        try:
-            df = pd.DataFrame(data)
-        except Exception as e:
-            st.error(f"Failed to convert to DataFrame: {e}")
+        if not valid_entries:
+            st.error("No valid vulnerability entries found.")
             st.stop()
 
-        # Convert to DataFrame
-        if isinstance(data, dict):
-            data = list(data.values())
-        df = pd.DataFrame(data)
+        try:
+            df = pd.DataFrame(valid_entries)
+        except Exception as e:
+            st.error(f"Could not convert to DataFrame: {e}")
+            st.stop()
 
         if df.empty:
             st.warning("No vulnerabilities found in the file.")
