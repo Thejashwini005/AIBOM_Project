@@ -17,6 +17,10 @@ if uploaded_file is not None:
     # Load and parse JSON data
     data = json.load(uploaded_file)
 
+    # 🩵 Fix: Convert dict-of-dicts to list of dicts
+    if isinstance(data, dict):
+        data = list(data.values())
+
     if not data:
         st.warning("Uploaded file is empty.")
     else:
