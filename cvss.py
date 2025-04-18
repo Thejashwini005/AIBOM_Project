@@ -17,14 +17,14 @@ if uploaded_file is not None:
     # Load and parse JSON data
     data = json.load(uploaded_file)
 
-    # 🩵 Fix: Convert dict-of-dicts to list of dicts
-    if isinstance(data, dict):
-        data = list(data.values())
+    # 🩵 Fix: Convert dict-of-dicts to list of dict
 
     if not data:
         st.warning("Uploaded file is empty.")
     else:
         # Convert to DataFrame
+        if isinstance(data, dict):
+            data = list(data.values())
         df = pd.DataFrame(data)
 
         if df.empty:
