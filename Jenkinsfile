@@ -46,6 +46,7 @@ pipeline {
                     echo "📥 Fetching AIBOM script..."
                     sh "git clone ${SCRIPT_REPO} ${MODEL_DIR}/script"
                     sh "cp ${MODEL_DIR}/script/generate_aibom.py ${MODEL_DIR}/"
+
                     echo "✅ Deploy stage completed."
                 }
             }
@@ -74,6 +75,11 @@ pipeline {
                         which syft || echo "Syft not found!"
                         which trivy || echo "Trivy not found!"
                     '''
+
+                    sh '''
+                        pip install streamlit
+                    '''
+
                     
                     echo "🛠️ Running AIBOM script..."
                     sh "python ${MODEL_DIR}/generate_aibom.py --model-path ${MODEL_DIR}"
@@ -113,6 +119,21 @@ pipeline {
                 }
             }
         }
+
+        stage('CVSS & CWE Dashboard') {
+            steps {
+                script {
+                    echo "📊 Launching CVSS & CWE Dashboard using Streamlit..."
+
+                    sh '''
+                        nohup streamlit run ${MODEL_DIR}/script/cvss_dashboard.py -- --input ${REPORT_DIR}/vulnerability.json --server.headless true --server.port 8501 --server.enableCORS false > streamlit.log 2>&1 &
+                        sleep 5
+                        echo "✅ Streamlit dashboard launched at: http://localhost:8501"
+                    '''
+                }
+            }
+        }
+
     }
 
     post {
